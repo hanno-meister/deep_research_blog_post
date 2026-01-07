@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>The Constraint Trap: How Deep Research Quietly Cheats</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.65;
+      color: #1a1a1a;
+      max-width: 760px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    h1, h2, h3 { line-height: 1.25; }
+    h1 { font-size: 2.2em; margin-bottom: 0.6em; }
+
+    h2 {
+      margin-top: 2.6em;
+      border-bottom: 1px solid #eaeaea;
+      padding-bottom: 0.3em;
+    }
+
+    h3 { margin-top: 1.8em; }
+
+    p { margin: 1.1em 0; }
+
+    ul { margin: 1em 0 1.2em; padding-left: 1.2em; }
+    li { margin: 0.45em 0; }
+
+    table.comparison {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.6em 0 2.2em;
+      font-size: 0.95em;
+      line-height: 1.5;
+    }
+
+    table.comparison th,
+    table.comparison td {
+      border-top: 1px solid rgba(0,0,0,0.10);
+      padding: 12px 10px;
+      vertical-align: top;
+      word-break: normal;
+      overflow-wrap: break-word;
+      hyphens: manual;
+    }
+
+    table.comparison thead th {
+      border-top: 1px solid rgba(0,0,0,0.14);
+      border-bottom: 1px solid rgba(0,0,0,0.14);
+      text-align: left;
+      font-weight: 650;
+    }
+
+    table.comparison code {
+      font-size: 0.95em;
+    }
+
+    @media (max-width: 820px) {
+      table.comparison td {
+        padding: 10px 8px;
+      }
+    }
+
+    blockquote {
+      border-left: 4px solid #ddd;
+      padding-left: 16px;
+      color: #555;
+      font-style: italic;
+      margin: 1.8em 0;
+    }
+
+    .divider {
+      margin: 3em 0;
+      text-align: center;
+      color: #aaa;
+    }
+
+    .lede {
+      font-size: 1.05em;
+      color: #222;
+    }
+
+    blockquote.callout {
+      margin: 2.0em auto;
+      padding: 0;
+      border-left: 0;
+      max-width: 720px;
+      text-align: center;
+      color: #555;
+      font-style: italic;
+      font-weight: 450;
+      letter-spacing: -0.01em;
+      font-size: 1.18em;
+      line-height: 1.45;
+    }
+
+    blockquote.callout::before {
+      content: "“";
+      display: block;
+      font-style: normal;
+      font-weight: 650;
+      font-size: 2.3em;
+      line-height: 0.8;
+      margin-bottom: 0.15em;
+      color: rgba(0, 0, 0, 0.18);
+    }
+
+    blockquote.callout::after {
+      content: "";
+      display: block;
+      width: 72px;
+      height: 1px;
+      background: rgba(0, 0, 0, 0.14);
+      margin: 0.9em auto 0;
+    }
+
+    @media (max-width: 520px) {
+      blockquote.callout {
+        font-size: 1.10em;
+      }
+    }
+
+    p.intro-lede {
+      font-size: 1.08em;
+      color: #222;
+      margin-top: 1.15em;
+    }
+
+    figure {
+      margin: 2.4em 0;
+      page-break-inside: avoid;
+      break-inside: avoid;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    figure img {
+      width: 100%;
+      max-width: 860px;
+      height: auto;
+      display: block;
+
+      border-radius: 14px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      background: #fff;
+
+      box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.05),
+        0 12px 28px rgba(0, 0, 0, 0.08);
+    }
+
+    figure video {
+      width: 100%;
+      max-width: 860px;
+      height: auto;
+      display: block;
+      border-radius: 14px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      background: #fff;
+      box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.05),
+        0 12px 28px rgba(0, 0, 0, 0.08);
+    }
+
+    img.zoomable {
+      cursor: zoom-in;
+    }
+
+    figure.small img,
+    figure.small figcaption {
+      max-width: 520px;
+    }
+
+    figure.tiny img,
+    figure.tiny figcaption {
+      max-width: 420px;
+    }
+
+    figcaption {
+      width: 100%;
+      max-width: 860px;
+
+      margin-top: 0.85em;
+      color: #666;
+      font-size: 0.92em;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    figcaption code {
+      font-size: 0.95em;
+    }
+
+    figure.evidence-panels {
+      width: 100%;
+      max-width: 860px;
+      margin: 2.4em auto;
+      display: block;
+    }
+
+    figure.evidence-panels .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    figure.evidence-panels .panel {
+      border: 1px solid rgba(0,0,0,0.10);
+      border-radius: 14px;
+      background: #fff;
+      overflow: hidden;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 10px 24px rgba(0,0,0,0.06);
+    }
+
+    figure.evidence-panels .label {
+      padding: 10px 12px;
+      font-size: 0.85em;
+      font-weight: 650;
+      color: #333;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      background: rgba(0,0,0,0.02);
+    }
+
+    figure.evidence-panels img {
+      width: 100%;
+      max-width: 100%;
+      display: block;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    figure.evidence-panels figcaption {
+      margin-top: 12px;
+      text-align: left;
+    }
+
+    @media (min-width: 860px) {
+      figure.evidence-panels .grid {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+      }
+    }
+
+    .img-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      background: rgba(0,0,0,0.72);
+      z-index: 9999;
+    }
+
+    .img-modal.open {
+      display: flex;
+    }
+
+    .img-modal-inner {
+      max-width: min(1200px, 95vw);
+      max-height: 92vh;
+    }
+
+    .img-modal img {
+      width: 100%;
+      height: auto;
+      max-height: 92vh;
+      object-fit: contain;
+      display: block;
+      border-radius: 14px;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.45);
+    }
+
+    .img-modal button {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.25);
+      background: rgba(0,0,0,0.35);
+      color: #fff;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    body.modal-open {
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>The Constraint Trap: How Deep Research Quietly Cheats</h1>
+
+<figure>
+  <img class="zoomable" src="./screenshot-perplexity-constraint-failure.jpg"
+       alt="Perplexity returning sources outside date and domain constraints">
+  <figcaption>
+    Research using Perplexity with explicit date and domain constraints — returning sources outside the
+    specified time window and whitelist.
+  </figcaption>
+</figure>
+
+<div class="divider">—</div>
+
+<p class="intro-lede">
+Deep research systems are everywhere now. They can search the web, synthesize dozens of sources,
+and generate polished reports in minutes. On the surface, they already do everything you’d want:
+filter by date, restrict domains, plug in a time window, add a few trusted sources, and let the
+system do the rest.
+</p>
+
+<blockquote class="callout">It sounds almost trivial — until you need those constraints to actually hold.</blockquote>
+
+<p>
+Ask for research between two specific dates and you get sources from six months earlier.
+Restrict the search to trusted domains and unapproved sources quietly slip in.
+Sometimes time is respected but domains are missed; sometimes domains are respected but results drift semantically.
+Sometimes everything looks coherent until you actually check the citations.
+</p>
+
+<p>
+We tried the big ones — Perplexity, ChatGPT Deep Research, Gemini Deep Research. They’re powerful, the demos look great, and the outputs read confidently.
+</p>
+
+<p>
+But when you ask for hard boundaries, the cracks show up fast. The screenshot above is the kind of failure that matters in practice: an explicit date window and a domain whitelist go in — and out-of-bounds sources and dates still sneak into the result.
+</p>
+
+<p>
+We also ran the same kind of request through OpenAI Deep Research. It produced a polished report, but the runtime was simply too long to be operational — often <strong>over 20 minutes</strong>. In our demo, our pipeline completes the same kind of run in about <strong>3 minutes</strong>, making recurring reports feasible.
+</p>
+
+<p class="lede">
+Deep research agents promise to scan the landscape, filter the noise, and surface what actually matters — reliably, repeatedly, and within clear boundaries. In practice, those boundaries are the most fragile part of the system.
+</p>
+
+<p>
+In this post, you’ll see:
+</p>
+
+<ul>
+  <li>Why constraint violations happen even when the output looks coherent</li>
+  <li>The failure modes that show up under scarcity and repeated runs</li>
+  <li>The structural decisions that made constraints hold end-to-end</li>
+</ul>
+
+<p>
+That fragility was the problem we set out to solve. We worked on a deep research agent designed
+to act as a trend scout for internal research groups. The goal was straightforward on paper:
+generate recurring research reports within an <strong>explicit historical range</strong>,
+from a <strong>trusted set of sources</strong>, in a <strong>standardized format</strong>,
+at a <strong>reasonable cost</strong>, and <strong>fast enough to run regularly</strong>.
+</p>
+
+<p>
+This post is about what broke, why it broke, and what we learned while turning
+a promising prototype into something that behaves more like infrastructure than a demo.
+</p>
+
+<figure class="tiny">
+  <video controls playsinline preload="metadata">
+    <source src="./Openai%20DR.mp4" type="video/mp4">
+  </video>
+  <figcaption>OpenAI Deep Research run (over 20 minutes).</figcaption>
+</figure>
+
+<figure class="tiny">
+  <video controls playsinline preload="metadata">
+    <source src="./Demo%202.mp4" type="video/mp4">
+  </video>
+  <figcaption>Our agent run (about 3 minutes).</figcaption>
+</figure>
+
+<h2>Making deep research dependable</h2>
+
+<p>
+This agent was never meant to be a general-purpose research assistant.
+Its role was deliberately narrow: act as a trend scout for internal research groups,
+operating within strict domain and time boundaries, and producing reports that could be
+compared meaningfully from one run to the next.
+</p>
+
+<p>
+That intent sounds straightforward. Search engines already support date filters,
+research tools already let you restrict domains, and nothing about the task appears
+conceptually new. The difficulty wasn’t defining the goal — it was getting the system
+to behave consistently once those constraints were applied.
+</p>
+
+<p>
+We inherited an early prototype that could generate research reports, but it wasn’t built
+on top of any established research framework. It worked well enough for demonstrations,
+yet its behavior was hard to reason about, hard to constrain, and difficult to evolve
+once we started tightening the rules.
+</p>
+
+<p>
+That led us to a deliberate decision to rebuild the system on top of <strong>GPT Researcher</strong>.
+Not because we needed a more capable agent, but because we needed a clean, well-understood
+baseline for retrieval, synthesis, and report generation — something we could extend
+systematically rather than work around.
+</p>
+
+<p>
+The key shift was conceptual rather than technical. We stopped treating constraints as
+something the model should <em>try</em> to respect and started treating them as
+<strong>product requirements</strong>. Domain boundaries were enforced through explicit
+whitelists rather than suggestions. Time windows were treated as hard start and end
+dates, not approximations. Report structure became a programmatic contract instead of
+prompted prose. Even source dominance was constrained deliberately, rather than being
+left to whichever domain published the most content.
+</p>
+
+<blockquote class="callout">Constraints aren’t “preferences.” They’re requirements.</blockquote>
+
+<p>
+On paper, the system looked solid.
+Constraints were explicit, enforced in code, and treated as first-class requirements.
+At a high level, the workflow itself was straightforward:
+inputs came in, sources were retrieved,
+constraints were checked,
+results were synthesized,
+and a structured report was produced.
+</p>
+
+<p>
+Nothing about that flow appeared fragile in isolation.
+But once the agent was run repeatedly — across different domains,
+time windows, and source distributions —
+a different picture began to emerge.
+The most interesting problems didn’t show up as crashes or obvious errors.
+They showed up as confident, coherent outputs that quietly violated
+the very constraints the system was designed to enforce.
+</p>
+
+<figure class="small">
+  <img class="zoomable" src="./agent-workflow.png"
+       alt="High-level research agent workflow">
+  <figcaption>
+    High-level workflow: planning, parallel retrieval, constraint enforcement,
+    and structured synthesis.
+  </figcaption>
+</figure>
+
+<div class="divider">—</div>
+
+<h2>Where things started to fall apart</h2>
+
+<h3>1. When the agent invents continuity under constraint pressure</h3>
+
+<p>
+One of the first signs was the way sources were cited.
+Some reports included references that appeared entirely legitimate:
+plausible titles, publication dates, and summaries that were clearly relevant to the topic.
+At a glance, everything checked out.
+</p>
+
+<p>
+On closer inspection, it didn’t.
+Publication dates fell outside the selected time window,
+and URLs were often wrong or slightly corrupted.
+In many cases, the referenced article actually existed —
+but the cited link didn’t.
+You could usually find it by manually searching for the title.
+</p>
+
+<p>
+Understanding why this was happening took time.
+The first instinct was to inspect retrieval,
+which turned out to be behaving correctly.
+What we eventually uncovered was a different failure mode:
+when the system encountered <strong>insufficient valid sources</strong>
+that satisfied all constraints, it didn’t fail or return an empty result.
+It filled the gap itself.
+</p>
+
+<p>
+Under constraint pressure, the agent produced internally consistent-looking citations
+that violated both temporal and domain boundaries.
+Realizing that this behavior was caused by
+<strong>model hallucination under constraint pressure</strong>
+took significantly longer than we expected.
+</p>
+
+<p>
+From that point on, “no valid sources found” became a <strong>first-class outcome</strong>,
+not an error to hide or work around.
+</p>
+
+<h3>2. Retrieval looks solved — until constraints interact</h3>
+
+<p>
+Even after addressing hallucination under constraint pressure, another fragility remained.
+Most deep research pipelines live or die by retrieval, and this is where constraint enforcement
+proved far more subtle than expected. On paper, retrieval looks solved: filter by domain,
+filter by date, rank by relevance. In practice, it’s the interaction between those filters
+that causes problems to emerge.
+</p>
+
+<p>
+We initially built the system on top of <strong>Tavily</strong>.
+With standard settings and basic search depth, Tavily behaved predictably:
+when no sources matched the constraints, it often returned <strong>no results</strong>.
+Compared to other retrievers we tested — particularly those used in systems like Perplexity —
+Tavily discarded a much larger share of irrelevant content.
+The tradeoff was clear: higher precision at the cost of lower recall.
+</p>
+
+<p>
+The problematic behavior only appeared once we pushed the system harder.
+In advanced search depth, and specifically when <em>no valid sources existed</em>
+for the specified domain and time window, Tavily sometimes returned semantically relevant
+content that violated domain or temporal constraints.
+Faced with an empty result set, the system preferred something plausible over nothing correct.
+</p>
+
+<p>
+As we expanded the scope, we switched to <strong>Exa</strong> to increase coverage.
+The system returned more sources, but that increase in recall came with a familiar cost:
+a larger share of the results was less relevant.
+</p>
+
+<p>
+While validating historical runs, we noticed that some sources returned by Exa
+were violating the specified time constraints.
+At first, we assumed this was a fault in our own pipeline.
+We inspected our filtering logic and then turned to the retriever metadata
+to understand what was happening.
+</p>
+
+<p>
+That’s when the issue became visible.
+The <code>publication_date</code> metadata returned by Exa was often missing,
+incomplete, or clearly inaccurate, making the observed filtering behavior
+difficult to explain.
+</p>
+
+
+<p>
+Only after inspecting example outputs in Exa’s own documentation did it become clear
+that this behavior wasn’t specific to our implementation.
+The same inconsistencies were visible there as well —
+yet the issue is not explicitly documented or called out as a limitation.
+</p>
+
+<p>
+More importantly, retriever-side date filtering could not be reliably inferred
+from the returned metadata alone.
+Some sources were filtered out even though their metadata dates appeared to fall
+within the specified time window, while others passed through despite dates being
+clearly wrong.
+</p>
+
+<table class="comparison">
+  <colgroup>
+    <col style="width: 28%;">
+    <col style="width: 36%;">
+    <col style="width: 36%;">
+  </colgroup>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Tavily</th>
+      <th>Exa</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Tradeoff</strong></td>
+      <td>Higher precision; lower recall (may miss coverage)</td>
+      <td>Higher recall / coverage; lower precision (more irrelevant sources)</td>
+    </tr>
+    <tr>
+      <td><strong>Under empty constraints</strong></td>
+      <td>At advanced depth, may return “plausible” results that violate domain/time</td>
+      <td>Can surface sources that appear in-window but are hard to validate reliably</td>
+    </tr>
+    <tr>
+      <td><strong>Date signal quality</strong></td>
+      <td>Not the core issue here; main failure is fallback under emptiness</td>
+      <td><code>publication_date</code> often missing/incomplete/wrong; can’t trust metadata alone</td>
+    </tr>
+    <tr>
+      <td><strong>Best used for</strong></td>
+      <td>Strict pipelines where “no results” is acceptable and precision matters</td>
+      <td>Broad scanning, then apply stronger post-filtering/validation</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="divider">—</div>
+
+<h3>3. Filtering for correctness isn’t enough — usefulness matters too</h3>
+
+<p>
+That limitation pushed us to experiment with an additional guardrail.
+We integrated <strong>Scrapegraph</strong> into the pipeline as a way to extract
+and reason over page content directly, rather than relying solely on retriever
+metadata. The initial motivation was temporal validation: confirming publication
+dates from the page itself when metadata could not be trusted.
+</p>
+
+<p>
+Once in place, it became clear that the same mechanism could be applied more
+broadly. Beyond time filtering, we also faced a <em>criteria filtering</em>
+problem: there are sources that technically fall within the right domain and
+time window, but that are structurally not useful — content hidden behind
+paywalls, announcements without code or pricing, or articles that look relevant
+but cannot be acted upon.
+</p>
+
+<p>
+Using Scrapegraph, we experimented with applying natural-language criteria directly
+to extracted page content before final inclusion. In practice, this worked
+surprisingly well as an additional filtering layer on top of retrieval and
+domain constraints.
+</p>
+
+<p>
+The approach was promising, but it also introduced additional complexity and
+variability. For the MVP, we intentionally disabled this layer to keep the system
+predictable and easier to reason about. It will likely return as part of a more
+unified filtering layer that combines temporal validation, quality checks, and
+actionability criteria.
+</p>
+
+<p>
+A related but more structural issue emerged once we started comparing outputs
+across systems. When academic repositories such as arXiv were included, they
+tended to dominate the final reports. We observed the same skew in our system,
+OpenAI Deep Research, and Perplexity under comparable scopes.
+</p>
+
+<p>
+We don’t believe this dominance automatically indicates bias.
+A more plausible explanation is content reality:
+arXiv simply publishes vastly more material than most industry, product, or
+policy-focused sources. In many cases, this is genuinely where new ideas first
+appear.
+</p>
+
+<p>
+The real question is not whether this skew should be “fixed”, but whether it
+aligns with the intended use case. For enterprise trend scouting, relevance
+alone is often insufficient. Coverage balance becomes an explicit design
+decision.
+</p>
+
+<p>
+For our MVP, we made coverage balance an explicit part of retrieval.
+We experimented with several ways to prevent a single domain from dominating the results:
+reordering a combined result list by domain, fetching everything and mixing it afterward,
+or detecting dominant domains and retrying without them.
+In the end, we chose the simplest approach that worked reliably for a demo.
+</p>
+
+<p>
+We split the retrieval budget across the allowed domains, fetched results for each domain independently, and then combined them before applying relevance filtering.
+</p>
+
+<p>
+Dominant sources can still surface —
+but only if they earn their place rather than overwhelming the signal
+by sheer volume.
+</p>
+
+<figure class="evidence-panels">
+  <div class="grid">
+    <div class="panel">
+      <div class="label">Query</div>
+      <img class="zoomable" src="./tavily%20bug%201.png" alt="Tavily query and constraints" />
+    </div>
+    <div class="panel">
+      <div class="label">Response</div>
+      <img class="zoomable" src="./tavily%20bug%205.png" alt="Tavily response showing domain dominance and violations" />
+    </div>
+  </div>
+  <figcaption>
+    Retrieval output showing domain dominance: although multiple domains were allowed, results collapsed to a single source.
+    If you inspect the publication dates, you can also see violations of the specified time window conditions in Tavily’s advanced search depth mentioned before.
+  </figcaption>
+</figure>
+
+
+<div class="divider">—</div>
+
+<h2>The decisions that quietly made the system reliable</h2>
+
+<p>
+One of the fastest and most impactful quality improvements had nothing to do with models.
+We removed the free-text input field.
+Instead, users select a research group from a dropdown,
+and the system injects the domain description and constraints automatically.
+</p>
+
+<p>
+This dramatically reduced input variance and improved consistency.
+Later, we reintroduced limited free text —
+but only for editing the research group title and description,
+not for redefining the task itself.
+</p>
+
+<p>
+Several structural decisions proved just as important.
+Early versions relied on prompting the model to follow a template.
+The results looked good — until they didn’t.
+Small deviations accumulated, formatting drifted,
+and reports became harder to compare and validate over time.
+We replaced prompt-level formatting with structured LLM output,
+schema enforcement in code, and deterministic
+JSON → Markdown conversion.
+This removed an entire class of formatting errors
+and made reports easier to render, validate, and evolve.
+Streaming became harder,
+but for this use case reliability mattered more than immediacy.
+</p>
+
+<p>
+To understand how and why the system behaved the way it did,
+we instrumented the agent using <strong>LangSmith</strong>.
+Tracing full runs, inspecting retrieval decisions and intermediate steps,
+and comparing behavior across configurations allowed us to identify
+failure modes that would have been invisible otherwise.
+The goal wasn’t just debugging, but learning —
+feeding those insights back into better defaults,
+stronger guardrails, and more predictable behavior over time.
+</p>
+
+<p>
+Finally, we deliberately avoided optimizing for a single language model too early.
+Throughout development, we experimented with multiple models,
+treating the model as a replaceable component
+inside a constrained system rather than a fixed choice.
+This helped us understand how hallucination behavior,
+cost, latency, and reasoning depth change under strict constraints —
+and reinforced the idea that architecture and guardrails
+matter more than any single model choice.
+</p>
+
+<div class="divider">—</div>
+
+<h2>Results so far</h2>
+
+<p>
+The impact of these changes was immediately visible in the only way that matters for this use case:
+we hit the KPIs we actually cared about.
+</p>
+
+<p>
+We evaluated the same kind of domain- and time-constrained runs against Perplexity and OpenAI Deep Research.
+Both can produce polished synthesis, but neither treats constraints as hard requirements under pressure.
+As the hero screenshot shows, constraint violations can slip in quietly.
+</p>
+
+<p>
+Our pipeline behaves differently: constraints are enforced explicitly and transparently.
+Time windows and domain whitelists hold end-to-end, report structure is consistent by design,
+and “no valid sources found” is a first-class outcome rather than something to paper over.
+</p>
+
+<p>
+Speed was part of the KPI as well. In our demo, a full run completes in about <strong>3 minutes</strong>.
+In our testing, OpenAI Deep Research often took <strong>over 20 minutes</strong>, and some runs didn’t finish at all.
+For recurring reporting, that difference isn’t cosmetic — it determines whether the system is usable.
+</p>
+
+<p>
+Most importantly, the system crossed a qualitative threshold.
+What started as a promising prototype now behaves like infrastructure:
+something that can be run repeatedly,
+reasoned about over time,
+and improved incrementally without surprising its users.
+</p>
+
+
+<div class="divider">—</div>
+
+<h2>What’s next</h2>
+
+<ul>
+  <li>Reintroduce a unified <strong>LLM-as-a-judge</strong> layer for quality and actionability</li>
+  <li>Strengthen temporal validation beyond retriever metadata</li>
+  <li>Expand curated domains for product, legal, and policy coverage</li>
+  <li>Use observability data to systematically optimize the system</li>
+</ul>
+
+<div class="divider">—</div>
+
+<h2>Closing thought</h2>
+
+<blockquote>
+Deep research agents don’t fail because they lack constraints.<br/>
+They fail because <strong>constraint enforcement breaks at the system boundaries</strong> —
+retrieval, metadata, and synthesis.
+</blockquote>
+
+<p>
+Once you recognize this, the focus shifts. The problem is no longer about crafting better prompts
+or choosing a more capable model. It becomes an engineering problem: how constraints are represented,
+propagated, and enforced across the system.
+</p>
+
+<p>
+That shift changes everything. Because when deep research starts behaving like infrastructure —
+predictable, inspectable, and dependable — that’s when it becomes genuinely useful.
+</p>
+
+<div class="img-modal" id="img-modal" aria-hidden="true">
+  <button type="button" id="img-modal-close" aria-label="Close">×</button>
+  <div class="img-modal-inner">
+    <img id="img-modal-img" alt="" />
+  </div>
+</div>
+<script>
+(() => {
+  const modal = document.getElementById('img-modal');
+  const modalImg = document.getElementById('img-modal-img');
+  const closeBtn = document.getElementById('img-modal-close');
+  if (!modal || !modalImg || !closeBtn) return;
+
+  const close = () => {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+    modalImg.removeAttribute('src');
+  };
+
+  const open = (src, alt) => {
+    modalImg.src = src;
+    modalImg.alt = alt || '';
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+  };
+
+  document.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t && t.classList && t.classList.contains('zoomable') && t.tagName === 'IMG') {
+      open(t.currentSrc || t.src, t.alt);
+    }
+  });
+
+  closeBtn.addEventListener('click', close);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) close();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close();
+  });
+})();
+</script>
+</body>
+</html>
