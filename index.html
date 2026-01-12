@@ -37,9 +37,20 @@ body {
     table.comparison {
       width: 100%;
       border-collapse: collapse;
-      margin: 1.6em 0 2.2em;
+      margin: 0;
       font-size: 0.95em;
       line-height: 1.5;
+    }
+
+    /* Table styling (kept for potential future use). */
+    .table-card{
+      margin: 1.6em 0 2.2em;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 16px;
+      background: #fff;
+      overflow: hidden;
+      box-shadow: 0 1px 1px rgba(0,0,0,0.04), 0 8px 18px rgba(0,0,0,0.05);
+      padding: 12px 12px 10px; /* match compare-card inner padding vibe */
     }
 
     table.comparison th,
@@ -57,6 +68,7 @@ body {
       border-bottom: 1px solid rgba(0,0,0,0.14);
       text-align: left;
       font-weight: 650;
+      background: transparent;
     }
 
     .table-brand{
@@ -64,11 +76,30 @@ body {
       align-items: center;
       gap: 8px;
       white-space: nowrap;
+      padding: 8px 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,0.08);
+      background: rgba(0,0,0,0.015);
+      box-shadow: 0 1px 1px rgba(0,0,0,0.04);
     }
-    .table-brand img{
+
+    .table-icon-frame{
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.14);
+      background: rgba(0,0,0,0.02);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+    .table-icon-frame img{
+      width: 18px;
       height: 18px;
-      width: auto;
       display: block;
+      object-fit: contain;
     }
 
     table.comparison tbody tr:nth-child(odd){
@@ -185,6 +216,27 @@ body {
       letter-spacing: -0.01em;
       text-transform: none;
       color: rgba(0,0,0,0.75);
+    }
+
+    .compare-note{
+      margin: -0.4em 0 1.2em;
+      font-size: 0.98em;
+      line-height: 1.6;
+      color: rgba(0,0,0,0.64);
+    }
+    .compare-note strong{
+      font-weight: 650;
+      color: rgba(0,0,0,0.72);
+    }
+
+    /* Inline attribution logos (tiny, subtle). */
+    .inline-logo{
+      height: 14px;
+      width: auto;
+      margin-left: 6px;
+      vertical-align: text-bottom;
+      opacity: 0.75;
+      display: inline-block;
     }
 
     figure {
@@ -365,6 +417,16 @@ body {
       }
     }
 
+    /* 2-up variant for secondary comparisons (e.g., retrievers). */
+    .compare-grid.two-up{
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 860px){
+      .compare-grid.two-up{
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
     .compare-card {
       border: 1px solid rgba(0,0,0,0.08);
       border-radius: 16px;
@@ -390,6 +452,7 @@ body {
     @media (min-width: 860px) {
       .compare-title{
         display: grid;
+        /* 3 rows: brand box, summary, chips */
         grid-template-rows: 56px 52px 52px;
         justify-items: center;
         align-items: start;
@@ -399,8 +462,7 @@ body {
 
       .summary{
         height: 52px;
-        align-items: center;
-        overflow: hidden;
+        overflow: hidden; /* keep headers equal height across cards */
       }
 
       .chip-row{
@@ -451,7 +513,6 @@ body {
       display: flex;
       justify-content: center;
       width: 100%;
-      gap: 8px;
       align-items: center;
       text-align: center;
       padding: 6px 0;
@@ -463,6 +524,7 @@ body {
     .summary-text {
       font-weight: 600;
       color: rgba(0,0,0,0.70);
+      line-height: 1.2;
     }
 
     .brand-icon-frame {
@@ -590,7 +652,7 @@ body {
 
     <blockquote class="callout">It sounds almost trivial — until you need those constraints to actually hold.</blockquote>
 
-    <p class="compare-label">Three tools, three tradeoffs</p>
+    <p class="compare-note"><strong>Constraint-aware agent:</strong>a purpose-built research pipeline that enforces explicit constraints end-to-end and fails closed when they can’t be satisfied.</p>
     <section class="compare-grid" aria-label="Comparison: Perplexity vs OpenAI Deep Research vs our constraint-aware agent">
       <div class="compare-card">
         <div class="compare-title">
@@ -739,62 +801,49 @@ body {
 
     <p>
     This agent was never meant to be a general-purpose research assistant.
-    Its role was deliberately narrow: act as a trend scout for internal research groups,
+    Its role was deliberately narrow: act as a <strong>trend scout</strong> for internal research groups,
     operating within strict domain and time boundaries, and producing reports that could be
     compared meaningfully from one run to the next.
     </p>
 
     <p>
-    That intent sounds straightforward. Search engines already support date filters,
-    research tools already let you restrict domains, and nothing about the task appears
-    conceptually new. The difficulty wasn’t defining the goal — it was getting the system
-    to behave consistently once those constraints were applied.
+    On paper, the task looked straightforward.
+    Search engines already support date filters, research tools already allow domain restrictions,
+    and nothing about the goal appeared conceptually new.
+    The difficulty wasn’t defining the constraints — it was getting the system to
+    <strong>behave consistently once those constraints were applied</strong>.
     </p>
 
     <p>
     We inherited an early prototype that could generate research reports, but it wasn’t built
-    on top of any established research framework. It worked well enough for demonstrations,
-    yet its behavior was hard to reason about, hard to constrain, and difficult to evolve
-    once we started tightening the rules.
+    on top of any established research framework.
+    It worked well enough for demonstrations, yet its behavior was
+    <strong>hard to reason about</strong> and difficult to tighten as requirements became stricter.
+    That led us to rebuild the system on top of <strong>GPT Researcher</strong> —
+    not because we needed a more capable agent, but because we needed a
+    <strong>clean, well-understood baseline</strong> for retrieval, synthesis, and report generation
+    that we could extend systematically.
     </p>
 
     <p>
-    That led us to a deliberate decision to rebuild the system on top of <strong>GPT Researcher</strong>.
-    Not because we needed a more capable agent, but because we needed a clean, well-understood
-    baseline for retrieval, synthesis, and report generation — something we could extend
-    systematically rather than work around.
+    The key shift was <strong>conceptual rather than technical</strong>.
+    Constraints stopped being something the model should try to respect and became
+    <strong>product requirements</strong> enforced in code.
+    Domain boundaries became explicit whitelists, time windows hard start and end dates,
+    and report structure a programmatic contract rather than prompted prose.
     </p>
 
-    <p>
-    The key shift was conceptual rather than technical. We stopped treating constraints as
-    something the model should <em>try</em> to respect and started treating them as
-    <strong>product requirements</strong>. Domain boundaries were enforced through explicit
-    whitelists rather than suggestions. Time windows were treated as hard start and end
-    dates, not approximations. Report structure became a programmatic contract instead of
-    prompted prose. Even source dominance was constrained deliberately, rather than being
-    left to whichever domain published the most content.
-    </p>
-
-    <blockquote class="callout">Constraints aren’t “preferences.” They’re requirements.</blockquote>
+    <blockquote class="callout">
+      Constraints aren’t “preferences.” They’re requirements.
+    </blockquote>
 
     <p>
-    On paper, the system looked solid.
-    Constraints were explicit, enforced in code, and treated as first-class requirements.
-    At a high level, the workflow itself was straightforward:
-    inputs came in, sources were retrieved,
-    constraints were checked,
-    results were synthesized,
-    and a structured report was produced.
-    </p>
-
-    <p>
-    Nothing about that flow appeared fragile in isolation.
-    But once the agent was run repeatedly — across different domains,
-    time windows, and source distributions —
-    a different picture began to emerge.
-    The most interesting problems didn’t show up as crashes or obvious errors.
-    They showed up as confident, coherent outputs that quietly violated
-    the very constraints the system was designed to enforce.
+    None of this appeared fragile in isolation.
+    The problems only surfaced once the agent was run <strong>repeatedly</strong> — across different domains,
+    time windows, and source distributions.
+    And they didn’t show up as crashes or obvious errors.
+    They showed up as confident, coherent outputs that quietly violated the very constraints
+    the system was designed to enforce.
     </p>
 
     <figure class="small">
@@ -915,52 +964,58 @@ body {
     clearly wrong.
     </p>
 
-    <table class="comparison">
-      <colgroup>
-        <col style="width: 28%;">
-        <col style="width: 36%;">
-        <col style="width: 36%;">
-      </colgroup>
-      <thead>
-        <tr>
-          <th></th>
-          <th>
-            <span class="table-brand">
-              <img src="./tavily-color.svg" alt="" aria-hidden="true" />
-              <span>Tavily</span>
-            </span>
-          </th>
-          <th>
-            <span class="table-brand">
-              <img src="./exa_mark.svg" alt="" aria-hidden="true" />
-              <span>Exa</span>
-            </span>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Tradeoff</strong></td>
-          <td>Higher precision, lower recall (may miss coverage)</td>
-          <td>Higher recall and coverage, lower precision (more noise)</td>
-        </tr>
-        <tr>
-          <td><strong>Behavior under empty constraints</strong></td>
-          <td>At advanced depth, may return “plausible” results that violate domain or time</td>
-          <td>May surface results that appear in-window but are difficult to validate reliably</td>
-        </tr>
-        <tr>
-          <td><strong>Date signal quality</strong></td>
-          <td>Not the primary failure mode; issues emerge under fallback behavior</td>
-          <td><code>publication_date</code> often missing, incomplete, or inaccurate; metadata alone is unreliable</td>
-        </tr>
-        <tr>
-          <td><strong>Best used for</strong></td>
-          <td>Precision-focused pipelines where empty results are acceptable</td>
-          <td>Broad discovery, followed by strong post-filtering and validation</td>
-        </tr>
-      </tbody>
-    </table>
+    <p class="compare-label">Retriever tradeoffs (Tavily vs Exa)</p>
+    <section class="compare-grid two-up" aria-label="Comparison: Tavily vs Exa">
+      <div class="compare-card">
+        <div class="compare-title">
+          <div class="brand-badge">
+            <div class="brand-row">
+              <span class="brand-icon-frame" aria-hidden="true">
+                <img class="brand-icon" src="./tavily-color.svg" alt="" />
+              </span>
+              <h3 class="brand-name">Tavily</h3>
+            </div>
+          </div>
+          <div class="summary"><span class="summary-text">Higher precision, lower recall</span></div>
+          <div class="chip-row" aria-label="Use cases">
+            <span class="chip strong">Precision</span>
+            <span class="chip">Accept empty</span>
+            <span class="chip">Lower noise</span>
+          </div>
+        </div>
+        <ul class="kpi">
+          <li><b>Tradeoff</b> Higher precision, lower recall (may miss coverage)</li>
+          <li><b>Behavior under empty constraints</b> At advanced depth, may return “plausible” results that violate domain or time</li>
+          <li><b>Date signal quality</b> Not the primary failure mode; issues emerge under fallback behavior</li>
+          <li><b>Best used for</b> Precision-focused pipelines where empty results are acceptable</li>
+        </ul>
+      </div>
+
+      <div class="compare-card">
+        <div class="compare-title">
+          <div class="brand-badge">
+            <div class="brand-row">
+              <span class="brand-icon-frame" aria-hidden="true">
+                <img class="brand-icon" src="./exa_mark.svg" alt="" />
+              </span>
+              <h3 class="brand-name">Exa</h3>
+            </div>
+          </div>
+          <div class="summary"><span class="summary-text">Higher recall, more noise</span></div>
+          <div class="chip-row" aria-label="Use cases">
+            <span class="chip strong">Coverage</span>
+            <span class="chip">Post-filter</span>
+            <span class="chip">Validation</span>
+          </div>
+        </div>
+        <ul class="kpi">
+          <li><b>Tradeoff</b> Higher recall and coverage, lower precision (more noise)</li>
+          <li><b>Behavior under empty constraints</b> May surface results that appear in-window but are difficult to validate reliably</li>
+          <li><b>Date signal quality</b> <code>publication_date</code> often missing, incomplete, or inaccurate; metadata alone is unreliable</li>
+          <li><b>Best used for</b> Broad discovery, followed by strong post-filtering and validation</li>
+        </ul>
+      </div>
+    </section>
 
     <div class="divider">—</div>
 
@@ -968,7 +1023,7 @@ body {
 
     <p>
     That limitation pushed us to experiment with an additional guardrail.
-    We integrated <strong>Scrapegraph AI</strong> into the pipeline as a way to extract
+    We integrated <strong>Scrapegraph AI</strong><img class="inline-logo" src="./scrapegraph_mark.svg" alt="" aria-hidden="true" onerror="this.remove()" /> into the pipeline as a way to extract
     and reason over page content directly, rather than relying solely on retriever
     metadata. The initial motivation was <strong>temporal validation</strong>: confirming publication
     dates from the page itself when metadata could not be trusted.
