@@ -31,6 +31,19 @@ body {
 
     p { margin: 1.1em 0; }
 
+    a {
+      color: #111;
+    }
+
+    a:visited {
+      color: #111;
+    }
+
+    a:hover,
+    a:focus {
+      color: #000;
+    }
+
     ul { margin: 1em 0 1.2em; padding-left: 1.2em; }
     li { margin: 0.45em 0; }
 
@@ -158,6 +171,13 @@ body {
       line-height: 1.45;
     }
 
+    blockquote.callout.thesis {
+      max-width: 640px;
+      font-size: 1.32em;
+      font-weight: 600;
+      color: #2a2a2a;
+    }
+
     blockquote.callout::before {
       content: "“";
       display: block;
@@ -231,7 +251,7 @@ body {
 
     /* Inline attribution logos (tiny, subtle). */
     .inline-logo{
-      height: 14px;
+      height: 20px;
       width: auto;
       margin-left: 6px;
       vertical-align: text-bottom;
@@ -652,7 +672,11 @@ body {
 
     <blockquote class="callout">It sounds almost trivial — until you need those constraints to actually hold.</blockquote>
 
-    <p class="compare-note"><strong>Constraint-aware agent:</strong>a purpose-built research pipeline that enforces explicit constraints end-to-end and fails closed when they can’t be satisfied.</p>
+    <p>
+    To be fair, these aren’t bugs — these systems are doing what they’re designed to do. It’s just not what we needed. Here’s the high‑level tradeoff landscape we saw across the three approaches.
+    </p>
+
+    <p class="compare-note"><strong>Constraint-aware agent: </strong>a purpose-built research pipeline that enforces explicit constraints end-to-end and fails closed when they can’t be satisfied.</p>
     <section class="compare-grid" aria-label="Comparison: Perplexity vs OpenAI Deep Research vs our constraint-aware agent">
       <div class="compare-card">
         <div class="compare-title">
@@ -661,10 +685,10 @@ body {
               <span class="brand-icon-frame" aria-hidden="true">
                 <img class="brand-icon" src="./perplexity_mark.svg" alt="" />
               </span>
-              <h3 class="brand-name">Perplexity</h3>
+              <h3 class="brand-name"><a href="https://www.perplexity.ai/" target="_blank" rel="noreferrer">Perplexity</a></h3>
             </div>
           </div>
-          <div class="summary"><span class="summary-text">Fast discovery, soft guarantees</span></div>
+          <div class="summary"><span class="summary-text">Fast, soft constraints</span></div>
           <div class="chip-row" aria-label="Use cases">
             <span class="chip strong">Exploration</span>
             <span class="chip">Breadth</span>
@@ -673,9 +697,8 @@ body {
         </div>
         <ul class="kpi">
           <li><b>Optimizes for</b> Speed and breadth over strict correctness</li>
-          <li><b>Watch out</b> Date and domain filters behave like suggestions under pressure</li>
           <li><b>When to use</b> Quick exploration, early signal scanning, idea generation</li>
-          <li><b>Failure mode</b> Returns something plausible anyway</li>
+          <li><b>Tradeoff</b> Soft constraints under pressure</li>
         </ul>
       </div>
 
@@ -686,10 +709,10 @@ body {
               <span class="brand-icon-frame" aria-hidden="true">
                 <img class="brand-icon" src="./openai_mark.svg" alt="" />
               </span>
-              <h3 class="brand-name">OpenAI Deep Research</h3>
+              <h3 class="brand-name"><a href="https://openai.com/index/introducing-deep-research/" target="_blank" rel="noreferrer">OpenAI Deep Research</a></h3>
             </div>
           </div>
-          <div class="summary"><span class="summary-text">Best narrative, operationally slow</span></div>
+          <div class="summary"><span class="summary-text">Polished, slow cadence</span></div>
           <div class="chip-row" aria-label="Use cases">
             <span class="chip strong">Deep dive</span>
             <span class="chip">Synthesis</span>
@@ -698,9 +721,8 @@ body {
         </div>
         <ul class="kpi">
           <li><b>Optimizes for</b> Coherent synthesis and readable narratives</li>
-          <li><b>Watch out</b> Polished output, but slow enough to block repeated runs</li>
           <li><b>When to use</b> One-off deep dives and background briefs</li>
-          <li><b>Failure mode</b> Too slow for repeated or time-sensitive runs</li>
+          <li><b>Tradeoff</b> Slow cadence for repeated runs</li>
         </ul>
       </div>
 
@@ -708,13 +730,10 @@ body {
         <div class="compare-title">
           <div class="brand-badge">
             <div class="brand-row">
-              <span class="brand-icon-frame" aria-hidden="true">
-                <span class="brand-placeholder">AG</span>
-              </span>
               <h3 class="brand-name">Constraint-aware agent</h3>
             </div>
           </div>
-          <div class="summary"><span class="summary-text">Hard guarantees, operational cadence</span></div>
+          <div class="summary"><span class="summary-text">Hard constraints, fast runs</span></div>
           <div class="chip-row" aria-label="Use cases">
             <span class="chip accent">Recurring</span>
             <span class="chip">Hard constraints</span>
@@ -723,9 +742,8 @@ body {
         </div>
         <ul class="kpi">
           <li><b>Optimizes for</b> Hard domain and time guarantees, even at the cost of empty results</li>
-          <li><b>Watch out</b> Deliberately narrow scope; not a general research assistant</li>
           <li><b>When to use</b> Recurring reports and constraint-sensitive research</li>
-          <li><b>Failure mode</b> Fails closed when constraints can’t be satisfied</li>
+          <li><b>Tradeoff</b> Fails closed when constraints can’t be satisfied</li>
         </ul>
       </div>
     </section>
@@ -746,7 +764,7 @@ body {
     </p>
 
     <p>
-    But when you ask for <strong>hard boundaries</strong>, the cracks show up fast. The screenshot below is the kind of failure that matters in practice: an explicit date window and a domain whitelist go in — and out-of-bounds sources and dates still sneak into the result.
+    But when you ask for <strong>hard boundaries</strong>, the cracks show up fast. The screenshot below is the kind of failure that matters in practice: an explicit date window and a domain whitelist go in — and out-of-bounds sources and dates still sneak into the result. We tested this across dozens of domains and time windows; the pattern held.
     </p>
 
     <figure>
@@ -819,7 +837,7 @@ body {
     on top of any established research framework.
     It worked well enough for demonstrations, yet its behavior was
     <strong>hard to reason about</strong> and difficult to tighten as requirements became stricter.
-    That led us to rebuild the system on top of <strong>GPT Researcher</strong> —
+    That led us to rebuild the system on top of <strong><a href="https://github.com/assafelovic/gpt-researcher" target="_blank" rel="noreferrer">GPT Researcher</a></strong> —
     not because we needed a more capable agent, but because we needed a
     <strong>clean, well-understood baseline</strong> for retrieval, synthesis, and report generation
     that we could extend systematically.
@@ -833,8 +851,8 @@ body {
     and report structure a programmatic contract rather than prompted prose.
     </p>
 
-    <blockquote class="callout">
-      Constraints aren’t “preferences.” They’re requirements.
+    <blockquote class="callout thesis">
+      <strong>Constraints aren’t “preferences.” They’re requirements.</strong>
     </blockquote>
 
     <p>
@@ -911,7 +929,7 @@ body {
     </p>
 
     <p>
-    We initially built the system on top of <strong>Tavily</strong>.
+    We initially built the system on top of <strong><a href="https://www.tavily.com/" target="_blank" rel="noreferrer">Tavily</a></strong>.
     With standard settings and basic search depth, Tavily behaved predictably:
     when no sources matched the constraints, it often returned <strong>no results</strong>.
     Compared to other retrievers we tested — particularly those used in systems like Perplexity —
@@ -928,7 +946,7 @@ body {
     </p>
 
     <p>
-    As we expanded the scope, we switched to <strong>Exa</strong> to increase coverage.
+    As we expanded the scope, we switched to <strong><a href="https://exa.ai/" target="_blank" rel="noreferrer">Exa</a></strong> to increase coverage.
     The system returned more sources, but that increase in recall came with a familiar cost:
     a larger share of the results was less relevant.
     </p>
@@ -964,7 +982,7 @@ body {
     clearly wrong.
     </p>
 
-    <p class="compare-label">Retriever tradeoffs (Tavily vs Exa)</p>
+    <p class="compare-label">Retriever tradeoffs</p>
     <section class="compare-grid two-up" aria-label="Comparison: Tavily vs Exa">
       <div class="compare-card">
         <div class="compare-title">
@@ -973,7 +991,7 @@ body {
               <span class="brand-icon-frame" aria-hidden="true">
                 <img class="brand-icon" src="./tavily-color.svg" alt="" />
               </span>
-              <h3 class="brand-name">Tavily</h3>
+              <h3 class="brand-name"><a href="https://www.tavily.com/" target="_blank" rel="noreferrer">Tavily</a></h3>
             </div>
           </div>
           <div class="summary"><span class="summary-text">Higher precision, lower recall</span></div>
@@ -998,7 +1016,7 @@ body {
               <span class="brand-icon-frame" aria-hidden="true">
                 <img class="brand-icon" src="./exa_mark.svg" alt="" />
               </span>
-              <h3 class="brand-name">Exa</h3>
+              <h3 class="brand-name"><a href="https://exa.ai/" target="_blank" rel="noreferrer">Exa</a></h3>
             </div>
           </div>
           <div class="summary"><span class="summary-text">Higher recall, more noise</span></div>
@@ -1023,7 +1041,7 @@ body {
 
     <p>
     That limitation pushed us to experiment with an additional guardrail.
-    We integrated <strong>Scrapegraph AI</strong><img class="inline-logo" src="./scrapegraph_mark.svg" alt="" aria-hidden="true" onerror="this.remove()" /> into the pipeline as a way to extract
+    We integrated <img class="inline-logo" src="./scrapegraph_mark.svg" alt="" aria-hidden="true" onerror="this.remove()" /><strong><a href="https://scrapegraphai.com/" target="_blank" rel="noreferrer">Scrapegraph AI</a></strong> into the pipeline as a way to extract
     and reason over page content directly, rather than relying solely on retriever
     metadata. The initial motivation was <strong>temporal validation</strong>: confirming publication
     dates from the page itself when metadata could not be trusted.
@@ -1144,7 +1162,7 @@ body {
 
     <p>
     To understand how and why the system behaved the way it did,
-    we instrumented the agent using <strong>LangSmith</strong>.
+    we instrumented the agent using <strong><a href="https://www.langchain.com/langsmith/observability" target="_blank" rel="noreferrer">LangSmith</a></strong>.
     Tracing full runs, inspecting retrieval decisions and intermediate steps,
     and comparing behavior across configurations allowed us to identify
     failure modes that would have been invisible otherwise.
@@ -1195,6 +1213,10 @@ body {
     The most important shift, however, was qualitative.
     What began as a promising prototype now behaves like infrastructure:
     something that can be run repeatedly, reasoned about, and improved incrementally without surprising its users.
+    </p>
+
+    <p>
+    Still, some gaps remain — especially around deeper temporal validation and richer filtering. That’s why the next section focuses on what we’re adding next.
     </p>
 
     <h2>What’s next</h2>
