@@ -673,10 +673,21 @@ body {
     <blockquote class="callout">It sounds almost trivial — until you need those constraints to actually hold.</blockquote>
 
     <p>
-    To be fair, these aren’t bugs — these systems are doing what they’re designed to do. It’s just not what we needed. Here’s the high‑level tradeoff landscape we saw across the three approaches.
+      The problem isn’t that these systems are broken. They’re doing what they’re designed to do:
+      optimize for coherent, helpful synthesis. But when constraints matter, coherence isn’t the goal.
+      <strong>Correctness under hard boundaries is.</strong>
     </p>
 
-    <p class="compare-note"><strong>Constraint-aware agent: </strong>a purpose-built research pipeline that enforces explicit constraints end-to-end and fails closed when they can’t be satisfied.</p>
+    <p>
+      We evaluated several existing deep-research approaches and saw a consistent pattern: each is strong,
+      but each optimizes for a different failure mode.
+    </p>
+
+    <p class="compare-note">
+      <strong>Constraint-aware agent:</strong> a purpose-built research pipeline that we built to enforce explicit constraints end-to-end
+      and fail closed when they can’t be satisfied.
+    </p>
+
     <section class="compare-grid" aria-label="Comparison: Perplexity vs OpenAI Deep Research vs our constraint-aware agent">
       <div class="compare-card">
         <div class="compare-title">
@@ -749,22 +760,15 @@ body {
     </section>
 
     <p>
-    All three approaches are strong — they just optimize for <strong>very different failure modes</strong>.
+      The failures we cared about weren’t subtle. They were operational:
+      you ask for a strict time window and get out-of-window sources;
+      you whitelist domains and unapproved sources slip in;
+      citations look fine until you verify them.
     </p>
 
     <p>
-    Ask for research between two specific dates and you get sources from six months earlier.
-    Restrict the search to trusted domains and unapproved sources <strong>quietly slip in</strong>.
-    Sometimes time is respected but domains are missed; sometimes domains are respected but results drift semantically.
-    Sometimes everything looks coherent until you actually check the citations.
-    </p>
-
-    <p>
-    We tried the big ones — Perplexity, ChatGPT Deep Research, Gemini Deep Research. They’re powerful, the demos look great, and the outputs read confidently.
-    </p>
-
-    <p>
-    But when you ask for <strong>hard boundaries</strong>, the cracks show up fast. The screenshot below is the kind of failure that matters in practice: an explicit date window and a domain whitelist go in — and out-of-bounds sources and dates still sneak into the result. We tested this across dozens of domains and time windows; the pattern held.
+      These violations don’t show up as errors. They show up as <strong>quiet drift</strong> —
+      wrapped in otherwise coherent output. That’s what makes them risky in practice.
     </p>
 
     <figure>
@@ -776,36 +780,30 @@ body {
     </figure>
 
     <p>
-    We also ran the same kind of request through OpenAI Deep Research. It produced a polished report, but the runtime was simply too long to be operational — often <strong>over 20 minutes</strong>. In our demo, our constraint-aware agent completes the same kind of run in about <strong>3 minutes</strong>, making recurring reports feasible.
+      We ran the same constraint-heavy requests through OpenAI Deep Research. The report quality was strong,
+      but the runtime was too slow to be operational — often <strong>20+ minutes</strong>.
+      In contrast, our constraint-aware agent completes comparable runs in about <strong>3 minutes</strong>,
+      making recurring and iterative use feasible.
     </p>
 
     <p class="lede">
-    Deep research agents promise to scan the landscape, filter the noise, and surface what actually matters — reliably, repeatedly, and within clear boundaries. In practice, those boundaries are the <strong>most fragile part</strong> of the system.
+      Deep research agents promise to scan the landscape, filter the noise, and surface what matters — repeatedly, and within clear boundaries.
+      In practice, <strong>those boundaries are the most fragile part</strong> of the system.
     </p>
 
-    <p>
-    In this post, you’ll see:
-    </p>
-
-    <ul>
-      <li>Why constraint violations happen even when the output looks coherent</li>
-      <li>The failure modes that show up under scarcity and repeated runs</li>
-      <li>The structural decisions that made constraints hold end-to-end</li>
-    </ul>
+    <div class="divider compact">—</div>
 
     <p>
-    That fragility was the problem we set out to solve. We worked on a deep research agent designed
-    to act as a trend scout for internal research groups. The goal was straightforward on paper:
-    generate recurring research reports within an <strong>explicit historical range</strong>,
-    from a <strong>trusted set of sources</strong>, in a <strong>standardized format</strong>,
-    at a <strong>reasonable cost</strong>, and <strong>fast enough to run regularly</strong>.
+      We built this agent for a narrow role: act as a <strong>trend scout</strong> for internal research groups,
+      generating recurring reports within a fixed historical range, from a trusted set of sources,
+      in a standardized format — fast enough to run regularly.
     </p>
 
     <figure class="tiny">
       <video controls playsinline preload="metadata">
         <source src="./Openai%20DR.mp4" type="video/mp4">
       </video>
-      <figcaption>OpenAI Deep Research run (over 20 minutes).</figcaption>
+      <figcaption>OpenAI Deep Research run (often 20+ minutes).</figcaption>
     </figure>
 
     <figure class="tiny">
@@ -818,37 +816,22 @@ body {
     <h2>Making deep research dependable</h2>
 
     <p>
-    This agent was never meant to be a general-purpose research assistant.
-    Its role was deliberately narrow: act as a <strong>trend scout</strong> for internal research groups,
-    operating within strict domain and time boundaries, and producing reports that could be
-    compared meaningfully from one run to the next.
+      On paper, the problem looked straightforward. Search engines support date filters. Research tools allow domain restrictions.
+      The hard part wasn’t specifying constraints — it was making them <strong>survive the whole pipeline</strong>:
+      retrieval, metadata, fallbacks, and synthesis.
     </p>
 
     <p>
-    On paper, the task looked straightforward.
-    Search engines already support date filters, research tools already allow domain restrictions,
-    and nothing about the goal appeared conceptually new.
-    The difficulty wasn’t defining the constraints — it was getting the system to
-    <strong>behave consistently once those constraints were applied</strong>.
+      We inherited an early prototype that worked for demos, but its behavior was hard to reason about and hard to tighten.
+      We rebuilt on top of <strong><a href="https://github.com/assafelovic/gpt-researcher" target="_blank" rel="noreferrer">GPT Researcher</a></strong>
+      not to make the agent “smarter,” but to start from a clean, understandable baseline we could extend systematically.
     </p>
 
     <p>
-    We inherited an early prototype that could generate research reports, but it wasn’t built
-    on top of any established research framework.
-    It worked well enough for demonstrations, yet its behavior was
-    <strong>hard to reason about</strong> and difficult to tighten as requirements became stricter.
-    That led us to rebuild the system on top of <strong><a href="https://github.com/assafelovic/gpt-researcher" target="_blank" rel="noreferrer">GPT Researcher</a></strong> —
-    not because we needed a more capable agent, but because we needed a
-    <strong>clean, well-understood baseline</strong> for retrieval, synthesis, and report generation
-    that we could extend systematically.
-    </p>
-
-    <p>
-    The key shift was <strong>conceptual rather than technical</strong>.
-    Constraints stopped being something the model should try to respect and became
-    <strong>product requirements</strong> enforced in code.
-    Domain boundaries became explicit whitelists, time windows hard start and end dates,
-    and report structure a programmatic contract rather than prompted prose.
+      The key shift was conceptual rather than technical:
+      constraints stopped being something the model should “try” to respect and became <strong>product requirements</strong> enforced in code.
+      Domain boundaries became explicit whitelists, time windows became hard start/end checks,
+      and report structure became a programmatic contract rather than prompted prose.
     </p>
 
     <blockquote class="callout thesis">
@@ -856,12 +839,10 @@ body {
     </blockquote>
 
     <p>
-    None of this appeared fragile in isolation.
-    The problems only surfaced once the agent was run <strong>repeatedly</strong> — across different domains,
-    time windows, and source distributions.
-    And they didn’t show up as crashes or obvious errors.
-    They showed up as confident, coherent outputs that quietly violated the very constraints
-    the system was designed to enforce.
+      The surprising part is how rarely constraint failures announce themselves.
+      They don’t crash the system. They produce outputs that look correct.
+      The failures only became obvious once we ran the agent repeatedly — across different domains, time windows, and source distributions —
+      and validated results systematically.
     </p>
 
     <figure class="small">
@@ -878,7 +859,7 @@ body {
     <h3>1. When the agent invents continuity under constraint pressure</h3>
 
     <p>
-    One of the first signs was the way sources were cited.
+    One of the first signals showed up in citations.
     Some reports included references that appeared entirely legitimate:
     plausible titles, publication dates, and summaries that were clearly relevant to the topic.
     At a glance, everything checked out.
@@ -915,8 +896,6 @@ body {
     From that point on, “no valid sources found” became a <strong>first-class outcome</strong>,
     not an error to hide or work around.
     </p>
-
-    <div class="divider">—</div>
 
     <h3>2. Retrieval looks solved — until constraints interact</h3>
 
@@ -1035,8 +1014,6 @@ body {
       </div>
     </section>
 
-    <div class="divider">—</div>
-
     <h3>3. Filtering for correctness isn’t enough — usefulness matters too</h3>
 
     <p>
@@ -1071,6 +1048,8 @@ body {
     actionability criteria.
     </p>
 
+    <div class="divider">—</div>
+
     <p>
     A related but more structural issue emerged once we started comparing outputs
     across systems. When academic repositories such as arXiv were included, they
@@ -1094,15 +1073,17 @@ body {
     </p>
 
     <p>
-    For our MVP, we made coverage balance an explicit part of retrieval.
-    We experimented with several ways to prevent a single domain from dominating the results:
-    reordering a combined result list by domain, fetching everything and mixing it afterward,
-    or detecting dominant domains and retrying without them.
-    In the end, we chose the simplest approach that worked reliably for a demo.
+      For our MVP, we made coverage balance an explicit part of retrieval.
+      We explored several strategies to prevent a single domain from dominating the results,
+      including reordering combined result lists by domain or splitting retrieval budgets up front.
+      In practice, those approaches either added complexity or proved brittle under edge cases.
     </p>
 
     <p>
-    We split the <strong>retrieval budget</strong> across the allowed domains, fetched results for each domain independently, and then combined them before applying relevance filtering.
+      Instead, we implemented a simple retry-based mechanism:
+      when a single domain began to dominate the results,
+      the system detected that skew and re-ran retrieval without the dominant source.
+      This kept coverage balanced while remaining predictable and easy to reason about.
     </p>
 
     <p>
@@ -1145,6 +1126,8 @@ body {
     not for redefining the task itself.
     </p>
 
+    <div class="divider">—</div>
+
     <p>
     Several structural decisions proved just as important.
     Early versions relied on prompting the model to follow a template.
@@ -1185,38 +1168,26 @@ body {
     <h2>Results so far</h2>
 
     <p>
-    The impact of these changes showed up quickly — not in demos, but in behavior.
-    Under the same domain- and time-constrained prompts, the systems diverged in ways that matter operationally.
+      Under the same domain- and time-constrained requests, systems diverged in ways that matter operationally.
+      Perplexity and OpenAI Deep Research can produce polished synthesis, but neither treats constraints as hard requirements —
+      and violations tend to slip in quietly.
     </p>
 
     <p>
-    Perplexity and OpenAI Deep Research can both produce polished synthesis.
-    But under pressure, neither treats constraints as <strong>hard requirements</strong>.
-    As the earlier Perplexity example shows, violations don’t announce themselves — they slip in quietly, wrapped in otherwise coherent output.
+      This agent behaves differently. Constraints are enforced end-to-end.
+      Time windows and domain whitelists hold throughout the pipeline, report structure is deterministic,
+      and <strong>“no valid sources found”</strong> is an intentional outcome rather than something to smooth over.
     </p>
 
     <p>
-    This agent behaves differently.
-    Constraints are enforced explicitly and end-to-end.
-    Time windows and domain whitelists hold throughout the pipeline, report structure is deterministic,
-    and <strong>“no valid sources found”</strong> is an intentional outcome rather than something to smooth over.
+      Latency reinforced the distinction. In our demo, a full run completes in about <strong>3 minutes</strong>.
+      OpenAI Deep Research often took <strong>20+ minutes</strong>, and some runs failed to complete.
+      For recurring reporting, that difference determines whether the system is usable at all.
     </p>
 
     <p>
-    Latency reinforced the distinction.
-    In our demo, a full run completes in about <strong>3 minutes</strong>.
-    OpenAI Deep Research often took <strong>20+ minutes</strong>, and some runs failed to complete altogether.
-    For recurring reporting, that difference isn’t cosmetic — it determines whether the system is usable at all.
-    </p>
-
-    <p>
-    The most important shift, however, was qualitative.
-    What began as a promising prototype now behaves like infrastructure:
-    something that can be run repeatedly, reasoned about, and improved incrementally without surprising its users.
-    </p>
-
-    <p>
-    Still, some gaps remain — especially around deeper temporal validation and richer filtering. That’s why the next section focuses on what we’re adding next.
+      The most important shift was qualitative: what began as a promising prototype now behaves like infrastructure —
+      something that can be run repeatedly, reasoned about, and improved incrementally without surprising its users.
     </p>
 
     <h2>What’s next</h2>
@@ -1237,14 +1208,14 @@ body {
     </blockquote>
 
     <p>
-    Once you recognize this, the focus shifts. The problem is no longer about crafting better prompts
-    or choosing a more capable model. It becomes an engineering problem: how constraints are represented,
-    propagated, and enforced across the system.
+      Once you recognize this, the focus shifts. The problem is no longer about crafting better prompts
+      or picking a more capable model. It becomes an engineering problem: how constraints are represented,
+      propagated, and enforced across the system.
     </p>
 
     <p>
-    That shift changes everything. Because when deep research starts behaving like infrastructure —
-    predictable, inspectable, and dependable — that’s when it becomes genuinely useful.
+      When deep research starts behaving like infrastructure — predictable, inspectable, and dependable —
+      that’s when it becomes genuinely useful.
     </p>
 
     <div class="img-modal" id="img-modal" aria-hidden="true">
